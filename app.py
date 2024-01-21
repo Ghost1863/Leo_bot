@@ -6,12 +6,13 @@ async def main (page: ft.Page)->None:
     page.bgcolor="#411221"
     page.vertical_alignment=ft.MainAxisAlignment.CENTER
     page.horizontal_alignment=ft.CrossAxisAlignment.CENTER
-    page.fonts={"beer-money":"fonts/beer-money.ttf"}
+    page.fonts={"beer-money":"fonts/beer-money12.ttf"}
     page.theme=ft.Theme(font_family="beer-money")
 
     async def score_up(event:ft.ContainerTapEvent)->None:
         score.data+=1
         score.value=str(score.data)
+
 
         image.scale=0.95
 
@@ -45,11 +46,11 @@ async def main (page: ft.Page)->None:
 
     score=ft.Text(value="0",size=100,data=0)
     score_counter=ft.Text(size=50,
-                          animate_opacity=ft.Animation(duration=600, curve=ft.AnimationCurve.BOUNCE_OUT)
+                          animate_opacity=ft.Animation(duration=600, curve=ft.AnimationCurve.DECELERATE)
                           )
     image=ft.Image(src="img.png",
                    fit=ft.ImageFit.CONTAIN,
-                    animate_scale=ft.Animation(duration=600, curve=ft.AnimationCurve.EASE)
+                    animate_scale=ft.Animation(duration=600, curve=ft.AnimationCurve.FAST_LINEAR_TO_SLOW_EASE_IN)
                    )
     progress_bar=ft.ProgressBar(
         value=0,
@@ -58,6 +59,9 @@ async def main (page: ft.Page)->None:
         color="#ff8b1f",
         bgcolor="#bf6524"
     )
+    audio=ft.Audio(src="audio/sound.mp3",autoplay=True)
+    page.overlay.append(audio)
+    
     await page.add_async(
 score,
         ft.Container(
@@ -71,4 +75,4 @@ score,
         )
     )
 if __name__ == "__main__":
-   ft.app(target=main, view=None,port=8000)
+   ft.app(target=main, view=ft.WEB_BROWSER,port=8000)
