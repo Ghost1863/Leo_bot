@@ -6,6 +6,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder,KeyboardButton,ReplyKey
 from dotenv import load_dotenv
 from random import randint
 
+
 load_dotenv()
 router=Router()
 
@@ -14,12 +15,11 @@ def webapp_builder()->InlineKeyboardBuilder:
     builder.button(text="Click as long as you can🦇🦇🦇",
                    web_app=WebAppInfo(url=os.getenv('REF')))
     return builder.as_markup()
-
 @router.message(CommandStart())
 async def start(message:Message) -> None:
     await message.answer(("<em><b>Challenge started💀</b></em>"),
                         reply_markup=webapp_builder(),
-                         parse_mode='HTML')
+                        parse_mode='HTML')
     await message.delete()
 
 @router.message(Command('help'))
@@ -67,23 +67,20 @@ async def reply_builder(message:Message):
         "Выберите число:",
         reply_markup=builder.as_markup(resize_keyboard=True),
     )
-# @router.message(F.text)
-# async def numb_choice(message:Message):
-#         if message.text == 1:
-#             await message.reply(text='Сосредоточьтесь на своих целях и поставленных задачах.',reply_markup=ReplyKeyboardRemove())
-#             return 0
-#         if message.text == 2:
-#             await message.reply(text='Будьте терпеливы и упорны в достижении желаемого результата. ',reply_markup=ReplyKeyboardRemove())
-#             return 0
-#         if F.text.lower() == '3':
-#             await message.reply(text=' Постарайтесь найти баланс между работой и отдыхом для сохранения энергии.',reply_markup=ReplyKeyboardRemove())
-#             return 0
-#         if F.text.lower() == '4':
-#             await message.reply(text='. Фокусируйтесь на своих навыках и умениях, чтобы проявить свой потенциал.',reply_markup=ReplyKeyboardRemove())
-#             return 0
-#         if F.text.lower() == '5':
-#             await message.reply(text='Ищите новые возможности для личностного роста и развития.',reply_markup=ReplyKeyboardRemove())
-#             return 0
+@router.message(lambda message: message.text.isdigit() and int(message.text) in range(1, 6))
+async def reply_by_number(message: Message):
+    number = int(message.text)
+    if number == 1:
+        await message.answer('Сосредоточьтесь на своих целях и поставленных задачах.')
+    elif number == 2:
+        await message.answer(' Будьте терпеливы и упорны в достижении желаемого результата')
+    elif number == 3:
+        await message.answer('Постарайтесь найти баланс между работой и отдыхом для сохранения энергии.')
+    elif number == 4:
+        await message.answer('Фокусируйтесь на своих навыках и умениях, чтобы проявить свой потенциал.')
+    elif number == 5:
+        await message.answer('Ищите новые возможности для личностного роста и развития.')
+
 @router.message(Command("links"))
 async def cmd_inline_url(message:Message):
     builder = InlineKeyboardBuilder()
@@ -121,11 +118,6 @@ async def send_random_value(callback:CallbackQuery):
     await callback.answer()
 
 user_data = {}
-
-
-
-
-
 def get_keyboard():
     buttons = [
         [
@@ -136,21 +128,15 @@ def get_keyboard():
     ]
     keyboard =InlineKeyboardMarkup(inline_keyboard=buttons)
     return keyboard
-
-
 async def update_num_text(message: Message, new_value: int):
     await message.edit_text(
         f"Укажите число: {new_value}",
         reply_markup=get_keyboard()
     )
-
-
 @router.message(Command("numbers_count"))
 async def cmd_numbers(message: Message):
     user_data[message.from_user.id] = 0
     await message.answer("Укажите число: 0", reply_markup=get_keyboard())
-
-
 @router.callback_query(F.data.startswith("num_"))
 async def callbacks_num(callback: CallbackQuery):
     user_value = user_data.get(callback.from_user.id, 0)
@@ -166,6 +152,8 @@ async def callbacks_num(callback: CallbackQuery):
         await callback.message.edit_text(f"Итого: {user_value}")
 
     await callback.answer()
+
+
 @router.message()
 async def hi(message:Message)->None:
     await message.answer("hi👋!")
