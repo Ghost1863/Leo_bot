@@ -43,22 +43,22 @@ async def cmd_food(message: Message)-> None:
     await message.answer("Choose the dish", reply_markup=keyboard)
 
 @router.message(F.text.lower() == "chicken")
-async def with_puree(message:Message):
+async def with_puree(message:Message)-> None:
     await message.reply("Let it be so🥱",reply_markup=ReplyKeyboardRemove())
     await message.answer_photo(photo='https://img.freepik.com/premium-photo/brown-hen-isolated-on-white-studio-shot_136670-3076.jpg')
 
 @router.message(F.text.lower() == "meat")
-async def without_puree(message:Message):
+async def without_puree(message:Message)-> None:
     await message.reply("Nice choice😊!",reply_markup=ReplyKeyboardRemove())
     await message.answer_photo(photo='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQj8pV6zokgWbJhdltrvc9GCNvRt_JeRFPflsktvSkgGw&s')
 
 @router.message(F.text.lower() == "fish")
-async def without_puree(message:Message):
+async def without_puree(message:Message)-> None:
     await message.reply("Are you serious😥?",reply_markup=ReplyKeyboardRemove())
     await message.answer_photo(photo='https://masterpiecer-images.s3.yandex.net/0a4b4a4d8c8711eea1ba3abd0be4d755:upscaled')
 
 @router.message(Command("numbers"))
-async def reply_builder(message:Message):
+async def reply_builder(message:Message)-> None:
     builder = ReplyKeyboardBuilder()
     for i in range(1, 21):
         builder.add(KeyboardButton(text=str(i)))
@@ -68,7 +68,7 @@ async def reply_builder(message:Message):
         reply_markup=builder.as_markup(resize_keyboard=True),
     )
 @router.message(lambda message: message.text.isdigit() and int(message.text) in range(1, 6))
-async def reply_by_number(message: Message):
+async def reply_by_number(message: Message)-> None:
     number = int(message.text)
     if number == 1:
         await message.answer('Сосредоточьтесь на своих целях и поставленных задачах.')
@@ -82,7 +82,7 @@ async def reply_by_number(message: Message):
         await message.answer('Ищите новые возможности для личностного роста и развития.')
 
 @router.message(Command("links"))
-async def cmd_inline_url(message:Message):
+async def cmd_inline_url(message:Message)-> None:
     builder = InlineKeyboardBuilder()
     builder.row(InlineKeyboardButton(
         text="GitHub", url="https://github.com")
@@ -101,7 +101,7 @@ async def cmd_inline_url(message:Message):
     )
 
 @router.message(Command("random"))
-async def cmd_random(message:Message):
+async def cmd_random(message:Message)-> None:
     builder = InlineKeyboardBuilder()
     builder.add(InlineKeyboardButton(
         text="Нажми меня",
@@ -113,7 +113,7 @@ async def cmd_random(message:Message):
     )
 
 @router.callback_query(F.data == "random_value")
-async def send_random_value(callback:CallbackQuery):
+async def send_random_value(callback:CallbackQuery)-> None:
     await callback.message.answer(str(randint(1, 10000)))
     await callback.answer()
 
@@ -128,17 +128,17 @@ def get_keyboard():
     ]
     keyboard =InlineKeyboardMarkup(inline_keyboard=buttons)
     return keyboard
-async def update_num_text(message: Message, new_value: int):
+async def update_num_text(message: Message, new_value: int)-> None:
     await message.edit_text(
         f"Укажите число: {new_value}",
         reply_markup=get_keyboard()
     )
 @router.message(Command("numbers_count"))
-async def cmd_numbers(message: Message):
+async def cmd_numbers(message: Message)-> None:
     user_data[message.from_user.id] = 0
     await message.answer("Укажите число: 0", reply_markup=get_keyboard())
 @router.callback_query(F.data.startswith("num_"))
-async def callbacks_num(callback: CallbackQuery):
+async def callbacks_num(callback: CallbackQuery)-> None:
     user_value = user_data.get(callback.from_user.id, 0)
     action = callback.data.split("_")[1]
 
@@ -154,6 +154,23 @@ async def callbacks_num(callback: CallbackQuery):
     await callback.answer()
 
 
+
+@router.message(Command('alko'))
+async def alko(message:Message)->None:
+    builder = InlineKeyboardBuilder()
+    builder.add(InlineKeyboardButton(text= '❤️❤️❤️️❤️️❤️️❤️️❤️️❤️️❤️❤️', callback_data='like'))
+    builder.add(InlineKeyboardButton(text= '👎',callback_data='dislike'))
+    await message.answer_photo(photo='https://avatars.dzeninfra.ru/get-zen_doc/1131857/pub_5b66fb00b9dc1000a9eca832_5b66fb2a2ef71f00a889eb2a/scale_1200',
+                               reply_markup=builder.as_markup(),
+                               caption='it is obvious')
+@router.callback_query()
+async def alko_handler(callback:CallbackQuery):
+    if callback.data=='like':
+        await callback.message.answer("You are absolutely right👈👈👈")
+        await callback.message.answer_photo(photo='https://i.pinimg.com/736x/3e/69/33/3e6933f1430c178465f64df11671c0e9.jpg')
+    elif callback.data=='dislike':
+        await callback.message.answer('.....')
+        await callback.message.answer_photo(photo='https://kartinkof.club/uploads/posts/2022-03/1648360476_11-kartinkof-club-p-mem-cheshet-golovu-12.jpg')
 @router.message()
-async def hi(message:Message)->None:
-    await message.answer("hi👋!")
+async def print_ref(message:Message)->None:
+    await message.answer("Unknown command\nPrint /help to see command list")
